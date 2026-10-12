@@ -1,0 +1,39 @@
+name: Build Minecraft Mod
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    # 1. Check out the source code from your repository
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    # 2. Set up the correct Java Development Kit (JDK)
+    # Change '17' to '21' or '8' depending on your Minecraft target version
+    - name: Set up JDK
+      uses: actions/setup-java@v4
+      with:
+        java-version: '21'
+        distribution: 'temurin'
+
+    # 3. Grant execute permission to the Gradle wrapper script
+    - name: Make Gradle Wrapper Executable
+      run: chmod +x gradlew
+
+    # 4. Compile the mod using Gradle
+    - name: Build Mod with Gradle
+      run: ./gradlew build
+
+    # 5. Save the compiled .jar file so you can download it
+    - name: Upload Built Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: Built-Mod-JARs
+        path: build/libs/*.jar
